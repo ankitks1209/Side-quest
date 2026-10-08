@@ -14,9 +14,12 @@ Runtime authority: lib/quests/schema.ts; TypeScript types are inferred from Zod.
 | VerificationResult | verified: boolean, confidence: 0–1, reason: nonblank string |
 | QuestSession | questId, startedAt (epoch ms), completedAt? (epoch ms), activeScreenMs, completedTaskIds, verificationResults (task-ID → VerificationResult) |
 | QuestSummary | totalDurationMs, activeScreenMs, estimatedAwayMs, awayRatio (0–1), completedTasks (count), xp? |
+| QuestGenerationResponse | quest, source: gemma \| fallback |
 
 Quest/task IDs are nonblank; task IDs must be unique within a quest. Exactly one task requires photo verification. Schema checks structure, not full safety or semantic compatibility. All mock inputs are parsed; fixture selection preserves duration/mood/environment and approved primitives.
 
 V1 persistence is localStorage only. Plan 1 persists validated QuestInput preferences under a versioned key, never photos. Flow state and local photo previews are ephemeral; reload returns to Landing. Storage failure leaves the flow usable and gives a friendly warning.
 
 No User/Profile/Auth entity. No cloud synchronization. No real visibility/session tracker yet. Plan 1 verification and QuestSummary metrics are demo values, not measured results.
+
+Generated quest data remains untrusted until it passes JSON parsing, `QuestSchema`, request compatibility and deterministic safety. Provider metadata stays outside `Quest`; the client validates `QuestGenerationResponse` before placing a quest in React state.

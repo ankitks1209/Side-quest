@@ -5,7 +5,8 @@ import { QuestSetup } from "./QuestSetup";
 import { QuestTaskItem } from "./QuestTaskItem";
 import { EvidenceUploader } from "./EvidenceUploader";
 import { CompletionSummary } from "./CompletionSummary";
-import { DEFAULT_INPUT, selectMockQuest } from "@/lib/quests/fixtures";
+import { DEFAULT_INPUT } from "@/lib/quests/fixtures";
+import { QuestGenerationResponseSchema } from "@/lib/quests/generation-schema";
 import { createDemoSummary } from "@/lib/quests/demo-summary";
 import { loadPreferences, savePreferences } from "@/lib/storage/preferences";
 import type { Quest, QuestInput, QuestSummary } from "@/lib/quests/schema";
@@ -19,6 +20,7 @@ export function SideQuest() {
   const [active, setActive] = useState(false);
   const [summary, setSummary] = useState<QuestSummary | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   function navigate(next: Screen) {
     setScreen(next);
@@ -32,16 +34,33 @@ export function SideQuest() {
     setActive(false);
     navigate("setup");
   }
-  function generate() {
+  async function generate() {
+    if (isGenerating) return;
     setWarning(savePreferences(input));
-    setQuest(selectMockQuest(input));
-    setActive(false);
-    navigate("quest");
+    setIsGenerating(true);
+    try {
+      const response = await fetch("/api/quests/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+      if (!response.ok) throw new Error("quest_generation_failed");
+      const result = QuestGenerationResponseSchema.safeParse(await response.json());
+      if (!result.success) throw new Error("invalid_generation_response");
+      setQuest(result.data.quest);
+      setWarning(result.data.source === "fallback" ? "We made you a safe backup quest." : null);
+      setActive(false);
+      navigate("quest");
+    } catch {
+      setWarning("We couldn’t prepare a quest right now. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   }
   return <div className="app-shell">
     <header className="header"><Link href="/" onClick={() => { setWarning(null); navigate("landing"); }} className="wordmark" aria-label="SideQuest home"><span className="brand-mark" aria-hidden="true">↗</span>SIDEQUEST<span className="brand-dot">.</span></Link><span className="header-note">GO FIND SOMETHING.</span></header>
     <main ref={mainRef} tabIndex={-1} className={`main-content ${screen === "landing" ? "landing" : ""}`} aria-label={screenLabels[screen]}>
-      <div className="page-meta"><span>{screenLabels[screen]}</span><span>{screen === "landing" ? "EST. 2026" : "PLAN 1 / DEMO"}</span></div>
+      <div className="page-meta"><span>{screenLabels[screen]}</span><span>{screen === "landing" ? "EST. 2026" : "PLAN 2 / BETA"}</span></div>
       {screen === "landing" && <>
         <div className="trail-art" aria-hidden="true">
           <svg viewBox="0 0 340 220" fill="none"><path d="M-20 176C54 96 27 197 117 136S173 72 235 99 273 10 365 30" stroke="currentColor" strokeWidth="2" strokeDasharray="5 7" /><path d="M28 159 59 109l31 50H28Z" stroke="currentColor" strokeWidth="1.5" /><path d="m51 122 8 10 8-10M237 51v40m-15-20h30" stroke="currentColor" strokeWidth="1.5" /><circle cx="286" cy="44" r="19" fill="var(--lime)" /><path d="m278 52 16-16m-14 0h14v14" stroke="var(--ink)" strokeWidth="2" /><circle cx="120" cy="135" r="5" fill="var(--ink)" /><path d="M-10 211C78 149 206 219 358 140M-10 226C78 164 206 234 358 155" stroke="currentColor" strokeOpacity=".16" /></svg>
@@ -54,7 +73,7 @@ export function SideQuest() {
         <div className="landing-details"><span>15–60 MINUTES</span><span>NO MAP. JUST CURIOSITY.</span></div>
         <div className="field-note"><span aria-hidden="true">◎</span><p>You don’t need to go far<br />to find something new.</p></div>
       </>}
-      {screen === "setup" && <QuestSetup input={input} onChange={setInput} onGenerate={generate} />}
+      {screen === "setup" && <QuestSetup input={input} isGenerating={isGenerating} onChange={setInput} onGenerate={generate} />}
       {screen === "quest" && quest && (active ? <div className="active-quest">
         <div className="active-symbol" aria-hidden="true">↗</div><div className="eyebrow">QUEST STARTED</div>
         <h1>Put your<br /><span className="serif">phone away.</span></h1><p className="lede">We’ll be here when you’re back.</p>

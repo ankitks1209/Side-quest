@@ -6,8 +6,11 @@ const moods = [
   { value: "move", label: "Move", symbol: "→", detail: "Stretch your legs" },
   { value: "notice", label: "Notice", symbol: "◎", detail: "Look a little closer" },
 ] as const;
-export function QuestSetup({ input, onChange, onGenerate }: {
-  input: QuestInput; onChange: (input: QuestInput) => void; onGenerate: () => void;
+export function QuestSetup({ input, isGenerating, onChange, onGenerate }: {
+  input: QuestInput;
+  isGenerating: boolean;
+  onChange: (input: QuestInput) => void;
+  onGenerate: () => void;
 }) {
   return <>
     <div className="eyebrow">01 / PACK LIGHT</div>
@@ -15,21 +18,23 @@ export function QuestSetup({ input, onChange, onGenerate }: {
     <p className="lede">A few choices. A small adventure. All yours.</p>
     <fieldset><legend>How much time do you have?</legend>
       <div className="grid grid-cols-3 gap-2">{([15, 30, 60] as const).map((duration) =>
-        <button type="button" className={`choice duration ${input.durationMinutes === duration ? "selected" : ""}`} aria-pressed={input.durationMinutes === duration} key={duration} onClick={() => onChange({ ...input, durationMinutes: duration })}>
+        <button disabled={isGenerating} type="button" className={`choice duration ${input.durationMinutes === duration ? "selected" : ""}`} aria-pressed={input.durationMinutes === duration} key={duration} onClick={() => onChange({ ...input, durationMinutes: duration })}>
           <strong>{duration}</strong><span>minutes</span>
         </button>)}</div>
     </fieldset>
     <fieldset><legend>What feels right?</legend>
       <div className="grid grid-cols-2 gap-2">{moods.map((mood) =>
-        <button type="button" className={`choice mood ${input.mood === mood.value ? "selected" : ""}`} aria-pressed={input.mood === mood.value} key={mood.value} onClick={() => onChange({ ...input, mood: mood.value })}>
+        <button disabled={isGenerating} type="button" className={`choice mood ${input.mood === mood.value ? "selected" : ""}`} aria-pressed={input.mood === mood.value} key={mood.value} onClick={() => onChange({ ...input, mood: mood.value })}>
           <span aria-hidden="true" className="mood-symbol">{mood.symbol}</span><strong>{mood.label}</strong><span>{mood.detail}</span>
         </button>)}</div>
     </fieldset>
     <fieldset><legend>What’s around you?</legend>
       <div className="grid grid-cols-3 gap-2">{(["city", "park", "anywhere"] as const).map((environment) =>
-        <button type="button" className={`choice environment ${input.environment === environment ? "selected" : ""}`} aria-pressed={input.environment === environment} key={environment} onClick={() => onChange({ ...input, environment })}>{environment}</button>)}</div>
+        <button disabled={isGenerating} type="button" className={`choice environment ${input.environment === environment ? "selected" : ""}`} aria-pressed={input.environment === environment} key={environment} onClick={() => onChange({ ...input, environment })}>{environment}</button>)}</div>
     </fieldset>
-    <button className="button primary" onClick={onGenerate}>Generate my SideQuest <span aria-hidden="true">↗</span></button>
-    <p className="footnote">Plan 1 · Curated mock quests. No AI calls.</p>
+    <button className="button primary" disabled={isGenerating} onClick={onGenerate} aria-live="polite">
+      {isGenerating ? "Planning your escape…" : "Generate my SideQuest"}<span aria-hidden="true">{isGenerating ? "…" : "↗"}</span>
+    </button>
+    <p className="footnote">Hosted Gemma · Safe curated fallback available.</p>
   </>;
 }

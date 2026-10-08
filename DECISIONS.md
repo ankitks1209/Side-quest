@@ -76,3 +76,27 @@
 - Dependencies are pinned to exact installed versions and package-lock.json is committed-ready; use npm ci. Node 24.x is documented in .nvmrc and package engines for the selected Vitest version.
 - next.config.ts disables Next.js managed agentRules so next dev cannot append framework instructions to the hand-maintained AGENTS.md contract. Consult installed version-matched Next.js documentation when changing framework behavior.
 - Plan 1 does not persist photos or sessions. Only validated setup preferences are saved. Evidence and metrics remain simulations.
+
+## ADR-013: Disable Google Interaction Storage
+- Status: Accepted.
+- Decision: Every Google Interactions request uses `store: false`. SideQuest does not use `previous_interaction_id` or provider-managed conversation state.
+- Reason: Quest generation is stateless; disabling storage avoids unnecessary provider-side persistence and supports the local-first product boundary.
+- Revisit condition: A future authorized product requirement genuinely needs provider-managed conversation state.
+
+## ADR-014: Completed Interactions Only
+- Status: Accepted.
+- Decision: Accept a Google Interactions response only when `status === "completed"`; every other, unknown or missing status consumes the current attempt.
+- Reason: SideQuest needs synchronous quest generation and has no polling or tool-action workflow.
+- Revisit condition: SideQuest explicitly adopts a long-running model workflow.
+
+## ADR-015: Hosted Gemma Through Google Interactions
+- Status: Accepted.
+- Decision: The demo path uses `gemma-4-26b-a4b-it` through Google AI Studio / Gemini Developer API at `/v1beta/interactions` behind the small `QuestModel` interface.
+- Reason: Hosted inference improves demo reliability while the abstraction preserves a future local-Gemma path.
+- Revisit condition: A validated local provider meets the demo's reliability and latency needs.
+
+## ADR-016: Minimal Thinking for Quest JSON
+- Status: Accepted.
+- Decision: Hosted quest requests set `generation_config.thinking_level` to `minimal`.
+- Reason: Quest generation is a constrained JSON task, and minimal thinking keeps responses inside the 20-second synchronous attempt budget.
+- Revisit condition: Field testing shows a material quest-quality regression or Google changes the supported setting.
