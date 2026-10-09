@@ -36,6 +36,18 @@ npm run build
 ```
 For real generation and evidence verification, copy `.env.example` to `.env.local` and provide the server-only Google values. Missing or unavailable quest generation uses a validated curated fallback. Setup preferences and one active quest session persist locally; photos never do.
 
+## Render Deployment
+Deploy SideQuest as one **Render Node Web Service** because its quest and evidence APIs run on the server. No database, persistent disk, Docker image or static-site configuration is required.
+
+```text
+Branch: main
+Build command: npm ci && npm run build
+Start command: npm start
+Health check path: /
+```
+
+Configure these server environment variables in Render: `GEMMA_API_KEY`, `GEMMA_MODEL`, `GEMMA_BASE_URL`, and `VISION_MODEL`. Keep their values out of Git and never expose the key through a `NEXT_PUBLIC_` variable.
+
 ## Current Phase
 Plan 4A: hosted Gemma generates quests, Gemini 3.7 Flash checks one photo, and the completion screen calculates real session timing from SideQuest visibility. Active/Evidence refresh recovery uses one validated localStorage record. Deployment is the separate Plan 4B checkpoint.
 
