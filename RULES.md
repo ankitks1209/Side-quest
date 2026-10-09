@@ -20,4 +20,4 @@ Exactly one photo is checked against the photo task's single criterion. SideQues
 estimatedAwayMs = max(0, totalDurationMs - clampedActiveScreenMs)
 awayRatio = estimatedAwayMs / totalDurationMs (0 when duration is 0)
 
-Future measurement uses app visibility/session timing only. It is an estimate, never device-wide screen-time tracking. Plan 1 has clearly marked demo metrics only.
+Measurement runs from Begin through Completion using SideQuest document visibility. `activeScreenMs` accumulates visible segments; hidden elapsed time is estimated away. Clamp active time to total duration and return ratio 0 for zero-duration sessions. Never cap elapsed time at the selected duration or adjust a low score. It is an estimate, never device-wide screen-time tracking.

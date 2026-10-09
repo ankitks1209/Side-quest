@@ -2,20 +2,24 @@
 import { useEffect, useState } from "react";
 import { EvidenceVerificationResponseSchema, type EvidenceCompletionStatus } from "@/lib/evidence/schema";
 import { createCompletedTaskIds } from "@/lib/evidence/completion";
+import { classifyVerification } from "@/lib/evidence/policy";
 import type { Quest, VerificationResult } from "@/lib/quests/schema";
 
 type VerificationUiState = "ready" | "checking" | "verified" | "uncertain" | "error";
 
-export function EvidenceUploader({ quest, onComplete }: {
+export function EvidenceUploader({ quest, initialCompletedTaskIds = [], initialVerificationResult, onProgress, onComplete }: {
   quest: Quest;
+  initialCompletedTaskIds?: string[];
+  initialVerificationResult?: VerificationResult;
+  onProgress?: (completedTaskIds: string[], result: VerificationResult | null) => void;
   onComplete: (ids: string[], status: EvidenceCompletionStatus, result?: VerificationResult) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [inputKey, setInputKey] = useState(0);
-  const [uiState, setUiState] = useState<VerificationUiState>("ready");
-  const [result, setResult] = useState<VerificationResult | null>(null);
-  const [completed, setCompleted] = useState<string[]>([]);
+  const [uiState, setUiState] = useState<VerificationUiState>(() => initialVerificationResult ? classifyVerification(initialVerificationResult) : "ready");
+  const [result, setResult] = useState<VerificationResult | null>(initialVerificationResult ?? null);
+  const [completed, setCompleted] = useState<string[]>(initialCompletedTaskIds);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const photoTask = quest.tasks.find((task) => task.verificationRequired);
   const selfReportTasks = quest.tasks.filter((task) => !task.verificationRequired);
@@ -34,6 +38,7 @@ export function EvidenceUploader({ quest, onComplete }: {
     setUiState("ready");
     setUploadError(null);
     setInputKey((key) => key + 1);
+    onProgress?.(completed, null);
   }
 
   function selectImage(selected: File | undefined) {
@@ -48,6 +53,7 @@ export function EvidenceUploader({ quest, onComplete }: {
     setPreview(URL.createObjectURL(selected));
     setResult(null);
     setUiState("ready");
+    onProgress?.(completed, null);
   }
 
   async function verify() {
@@ -65,6 +71,7 @@ export function EvidenceUploader({ quest, onComplete }: {
       if (!parsed.success) throw new Error("invalid_verification_response");
       setResult(parsed.data.result);
       setUiState(parsed.data.status);
+      onProgress?.(completed, parsed.data.result);
     } catch {
       setResult(null);
       setUiState("error");
@@ -108,7 +115,11 @@ export function EvidenceUploader({ quest, onComplete }: {
       <fieldset className="self-report"><legend>What else did you discover?</legend>
         <p className="muted">Check the tasks you completed. It’s okay to skip one.</p>
         {selfReportTasks.map((task) => <label className="check-task" key={task.id}>
-          <input type="checkbox" checked={completed.includes(task.id)} onChange={(event) => setCompleted(event.target.checked ? [...completed, task.id] : completed.filter((id) => id !== task.id))} />
+          <input type="checkbox" checked={completed.includes(task.id)} onChange={(event) => {
+            const next = event.target.checked ? [...completed, task.id] : completed.filter((id) => id !== task.id);
+            setCompleted(next);
+            onProgress?.(next, result);
+          }} />
           <span>{task.instruction}</span>
         </label>)}
       </fieldset>

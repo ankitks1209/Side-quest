@@ -14,6 +14,6 @@ Landing: short promise and Start a SideQuest.
 Setup: exactly three duration choices, four moods and three environments.
 Quest: 2–3 readable mission cards; Begin switches to quiet active state with I'm back.
 Evidence: one local preview with replace/remove controls; explicit checking, verified, uncertain and provider-error states; self-report remaining tasks. Uncertain and error states allow completion without counting the photo discovery.
-Completion: mission complete, demo estimate and discoveries, honest photo verification receipt, restart action.
+Completion: mission complete, measured estimated-away time, measured time in SideQuest, Away Ratio, completed/total discoveries, honest photo verification receipt, restart action.
 
-Use text labels alongside decorative symbols. Completion timing keeps a visible demo label. Evidence verification is real and must not carry a mock label. No real XP economy; optional demo XP must never imply a retention system.
+Use text labels alongside decorative symbols. Completion explains that Away Ratio is an app-visibility estimate, never device-wide screen time. Evidence verification and completion timing are real and must not carry mock labels. No real XP economy.

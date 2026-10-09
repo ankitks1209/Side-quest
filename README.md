@@ -9,10 +9,10 @@ An open-AI outdoor quest engine that creates short real-world adventures and ver
 “The world is the interface.” Less screen interaction, more exploration and observation.
 
 ## Planned MVP
-Choose duration, mood and environment; receive 2–3 safe tasks, go outside, return with one photo, verify that photo against its mission criterion, self-report the remaining tasks and see an estimated Away Ratio. Timing remains a clearly labeled demo value.
+Choose duration, mood and environment; receive 2–3 safe tasks, go outside, return with one photo, verify that photo against its mission criterion, self-report the remaining tasks and see a measured visibility-based Away Ratio.
 
 ## Away Ratio
-Estimated time away from SideQuest / total quest duration. Future timing uses app visibility/session timing, never device-wide screen-time tracking. Current completion numbers are explicitly demo values.
+Estimated time away from SideQuest / total quest duration. Timing starts at Begin, ends at Completion and uses document visibility. It is an app-visibility estimate, never device-wide screen-time tracking.
 
 ## Product Screens
 Landing → Quest Setup → Quest (including active state) → Evidence → Completion.
@@ -34,10 +34,10 @@ npm run typecheck
 npm run test
 npm run build
 ```
-For real generation and evidence verification, copy `.env.example` to `.env.local` and provide the server-only Google values. Missing or unavailable quest generation uses a validated curated fallback. Setup preferences persist locally; photos and flow progress do not.
+For real generation and evidence verification, copy `.env.example` to `.env.local` and provide the server-only Google values. Missing or unavailable quest generation uses a validated curated fallback. Setup preferences and one active quest session persist locally; photos never do.
 
 ## Current Phase
-Plan 3: hosted `gemma-4-26b-a4b-it` generates approved quests and Gemini 3.7 Flash performs one bounded multimodal evidence check. SideQuest does not persist the uploaded evidence image; it is sent to Google with `store:false`. Uncertain or unavailable verification never blocks completion. Away Ratio and timing remain explicit demos.
+Plan 4A: hosted Gemma generates quests, Gemini 3.7 Flash checks one photo, and the completion screen calculates real session timing from SideQuest visibility. Active/Evidence refresh recovery uses one validated localStorage record. Deployment is the separate Plan 4B checkpoint.
 
 ## Hackathon Principle
 Optimize for a small, reliable, visually polished vertical slice. Add only what materially increases the chance of winning the current challenge.

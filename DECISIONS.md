@@ -124,3 +124,27 @@
 - Decision: Uncertain and provider-error states may continue, but the photo task does not count as completed.
 - Reason: A third-party model must not trap the outdoor quest flow or silently award unverified evidence.
 - Revisit condition: Never remove the escape path without an equally reliable recovery flow.
+
+## ADR-021: Visibility-Based Away Ratio
+- Status: Accepted.
+- Decision: Measure from Begin through Completion and treat elapsed time outside visible SideQuest segments as estimated away.
+- Reason: Browser visibility provides a small, permission-free and defensible estimate without claiming device-wide screen time.
+- Revisit condition: Never replace the disclosure with a stronger tracking claim; revisit mechanics only with field evidence.
+
+## ADR-022: Date.now for Persisted Session Timing
+- Status: Accepted.
+- Decision: Pass explicit epoch timestamps through pure timing functions and persist them with the active session.
+- Reason: Epoch timestamps remain meaningful across reloads; `performance.now()` does not.
+- Revisit condition: A future runtime provides a better cross-document monotonic clock.
+
+## ADR-023: One Recoverable Active Session
+- Status: Accepted.
+- Decision: Persist one validated Active/Evidence session in localStorage, including durable evidence results and self-reports but never image data.
+- Reason: Refresh resilience materially improves an outdoor flow without accounts, databases or history infrastructure.
+- Revisit condition: Explicit product demand for multiple or cross-device sessions.
+
+## ADR-024: Conservative Interrupted-Segment Recovery
+- Status: Accepted.
+- Decision: Discard an unfinished persisted visible segment on restore and begin a fresh segment only if the new document is visible.
+- Reason: Unknown time after a crash must not be falsely counted as visible app use.
+- Revisit condition: Browser lifecycle guarantees materially improve.

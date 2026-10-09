@@ -46,3 +46,8 @@ Plan 3 excludes image persistence, multiple images, video, OCR, recognition syst
 
 ## Plan 3 status
 Complete. Real verified and uncertain provider paths, forged upload rejection, 390×844 completion behavior, secret audit, lint, typecheck, 100+ tests and production build pass. Away Ratio and timing remain explicit demo values.
+
+## Plan 4A — real session timing and Away Ratio
+Plan 4A measures the session from Begin SideQuest through Complete my SideQuest. `activeScreenMs` accumulates only visible SideQuest segments; hidden elapsed time becomes estimated-away time. One validated active session is recoverable from localStorage across Active and Evidence refreshes. Evidence results and self-reports persist, but image bytes never do. Interrupted visible segments are discarded conservatively on restoration.
+
+Plan 4A is complete and verified. Deployment remains Plan 4B and has not started.

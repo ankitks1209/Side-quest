@@ -24,7 +24,7 @@ npm run build
 Run build and typecheck sequentially: Next.js regenerates .next type files during build/dev restarts.
 
 ## Manual acceptance
-Run npm run dev; complete Landing → Setup → Mock Quest → Begin → I'm Back → Mock Evidence → Completion. Verify local image preview, demo labeling, self-report completion and restart. Check 375, 390, 430px and desktop layouts, touch targets, keyboard focus, no overflow. Verify no keys or live services needed. Refresh returns to Landing and preserves setup preferences only.
+Run npm run dev; complete Landing → Setup → generated Quest → Begin → I'm Back → Evidence → Completion. Verify real measured timing, exact completed/total discoveries, local image preview, verification states and restart. Refresh during Active and Evidence must restore the current session without an image; refresh after Completion returns to Landing. Check 375, 390, 430px and desktop layouts, touch targets, keyboard focus and no overflow.
 
 ## Plan 2 automated tests
 - Frozen Google request contract, including `store: false`, model, endpoint and server-only key placement
@@ -42,8 +42,16 @@ Run npm run dev; complete Landing → Setup → Mock Quest → Begin → I'm Bac
 - Exactly two technical attempts and no retry for a valid uncertain result
 - Verified evidence counts; uncertain/unavailable evidence remains completable without counting the photo
 
+## Plan 4A automated tests
+- Explicit-timestamp start, repeated visibility transitions, multiple segments and completion boundaries
+- Zero duration, active-time clamping, uncapped elapsed duration and zero Away Ratio while always visible
+- Conservative interrupted-page restoration while visible or hidden
+- Active/Evidence record validation, corrupt state, storage failures and clearing
+- Durable self-report/verification progress with no image bytes
+- Minute and hour-plus duration formatting
+
 ## Future tests
-Away Ratio visibility and zero-duration cases. Outdoor field tests are future submission work.
+Production deployment smoke tests and outdoor field tests remain future work.
 
 ## Plan 1 verification record — 2026-10-07
 Lint, typecheck, 17 Vitest tests and production build pass on Node 24.18.0. Browser acceptance passed at 375×844, 390×844, 430×844 and 1280×900: full flow, local image selection/preview, invalid file feedback, self-report checkboxes, restart, refresh/preferences, skipped tasks and unavailable localStorage. No browser runtime errors or horizontal overflow. Mobile screenshots visually inspected. Build and local server require permission outside this workspace sandbox to bind local ports; this is an execution-environment constraint.
@@ -59,3 +67,6 @@ The two-failure path was exercised against the live provider when both requests 
 
 ## Plan 3 verification record — 2026-10-10
 Lint, strict typecheck, 100+ Vitest tests and the production webpack build pass. A real Gemini 3.7 Flash request verified a synthetic green/yellow checkerboard at 0.99 confidence; an unrelated solid-gray image returned uncertain; a JPEG declared as PNG was rejected with HTTP 400. The 390×844 browser flow completed an uncertain photo without counting it, counted both self-reported tasks, showed the honest completion receipt, had no horizontal overflow and logged no browser errors. The configured API key is absent from built artifacts. Automated tests cover the simulated two-failure provider path and error completion behavior without live provider calls.
+
+## Plan 4A verification record — 2026-10-10
+Lint, strict typecheck, 119 Vitest tests and production build pass. Browser acceptance at 390×844 restored both Active and Evidence phases after refresh, restored an uncertain verification result and a self-reported task without restoring its image, completed with measured values, showed 2 of 3 discoveries, cleared recovery state after completion and returned to Landing on completion refresh. There was no horizontal overflow and no browser warning/error output. Pure tests cover hidden-time math because browser automation cannot reliably background the in-app tab.
