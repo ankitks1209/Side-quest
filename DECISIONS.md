@@ -100,3 +100,27 @@
 - Decision: Hosted quest requests set `generation_config.thinking_level` to `minimal`.
 - Reason: Quest generation is a constrained JSON task, and minimal thinking keeps responses inside the 20-second synchronous attempt budget.
 - Revisit condition: Field testing shows a material quest-quality regression or Google changes the supported setting.
+
+## ADR-017: Gemini 3.7 Flash Evidence Verifier
+- Status: Accepted.
+- Decision: Use Gemini 3.7 Flash through the existing Google Interactions endpoint for one criterion-specific image check.
+- Reason: It provides verified multimodal input with minimal new provider surface while Gemma remains the open-weight quest-generation core.
+- Revisit condition: Field testing shows unacceptable accuracy, latency or availability.
+
+## ADR-018: No Evidence Image Persistence
+- Status: Accepted.
+- Decision: Keep image bytes only for the request and send them to Google with `store: false`; do not write them to storage or logs.
+- Reason: The vertical slice needs a result, not an evidence archive.
+- Revisit condition: An explicitly authorized product requirement needs evidence history.
+
+## ADR-019: Initial Evidence Confidence Threshold
+- Status: Accepted.
+- Decision: Treat `verified: true` at confidence 0.75 or higher as verified; classify every other valid result as uncertain.
+- Reason: One centralized conservative boundary is clear, testable and easy to tune after field evidence.
+- Revisit condition: Field tests support a different threshold.
+
+## ADR-020: Verification Never Blocks Completion
+- Status: Accepted.
+- Decision: Uncertain and provider-error states may continue, but the photo task does not count as completed.
+- Reason: A third-party model must not trap the outdoor quest flow or silently award unverified evidence.
+- Revisit condition: Never remove the escape path without an equally reliable recovery flow.

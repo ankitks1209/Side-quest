@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mockQuests, selectMockQuest } from "./fixtures";
-import { QuestInputSchema, QuestSchema } from "./schema";
+import { QuestInputSchema, QuestSchema, VerificationResultSchema } from "./schema";
 
 describe("quest contracts", () => {
   const base = mockQuests[0];
@@ -23,6 +23,12 @@ describe("quest contracts", () => {
   });
   it("rejects duplicate IDs", () => expect(QuestSchema.safeParse({ ...base, tasks: [base.tasks[0], { ...base.tasks[1], id: base.tasks[0].id }] }).success).toBe(false));
   it("validates all three curated fixtures", () => mockQuests.forEach((quest) => expect(QuestSchema.safeParse(quest).success).toBe(true)));
+  it("bounds verification confidence and reason length", () => {
+    expect(VerificationResultSchema.safeParse({ verified: true, confidence: 0.5, reason: "Visible." }).success).toBe(true);
+    expect(VerificationResultSchema.safeParse({ verified: true, confidence: -0.1, reason: "Visible." }).success).toBe(false);
+    expect(VerificationResultSchema.safeParse({ verified: true, confidence: 1.1, reason: "Visible." }).success).toBe(false);
+    expect(VerificationResultSchema.safeParse({ verified: true, confidence: 0.5, reason: "x".repeat(301) }).success).toBe(false);
+  });
   it("adapts location-specific copy for other environments", () => {
     const cityNotice = selectMockQuest({ durationMinutes: 15, mood: "notice", environment: "city" });
     expect(cityNotice.intro).not.toMatch(/park/i);

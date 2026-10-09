@@ -1,61 +1,110 @@
 "use client";
 import { useEffect, useState } from "react";
+import { EvidenceVerificationResponseSchema, type EvidenceCompletionStatus } from "@/lib/evidence/schema";
+import { createCompletedTaskIds } from "@/lib/evidence/completion";
 import type { Quest, VerificationResult } from "@/lib/quests/schema";
 
+type VerificationUiState = "ready" | "checking" | "verified" | "uncertain" | "error";
+
 export function EvidenceUploader({ quest, onComplete }: {
-  quest: Quest; onComplete: (ids: string[], result: VerificationResult) => void;
+  quest: Quest;
+  onComplete: (ids: string[], status: EvidenceCompletionStatus, result?: VerificationResult) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [verified, setVerified] = useState(false);
+  const [inputKey, setInputKey] = useState(0);
+  const [uiState, setUiState] = useState<VerificationUiState>("ready");
+  const [result, setResult] = useState<VerificationResult | null>(null);
   const [completed, setCompleted] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const photoTask = quest.tasks.find((task) => task.verificationRequired)!;
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const photoTask = quest.tasks.find((task) => task.verificationRequired);
   const selfReportTasks = quest.tasks.filter((task) => !task.verificationRequired);
 
-  useEffect(() => {
-    // Release ephemeral image data when changed or when leaving Evidence.
-    return () => { if (preview) URL.revokeObjectURL(preview); };
-  }, [preview]);
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
+
+  if (!photoTask?.verificationCriterion) return null;
+  const photoTaskId = photoTask.id;
+  const instruction = photoTask.instruction;
+  const verificationCriterion = photoTask.verificationCriterion;
+
+  function clearImage() {
+    setFile(null);
+    setPreview(null);
+    setResult(null);
+    setUiState("ready");
+    setUploadError(null);
+    setInputKey((key) => key + 1);
+  }
+
+  function selectImage(selected: File | undefined) {
+    if (!selected) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(selected.type) || selected.size > 5 * 1024 * 1024) {
+      clearImage();
+      setUploadError("Choose a JPG, PNG, or WebP photo smaller than 5 MB.");
+      return;
+    }
+    setUploadError(null);
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected));
+    setResult(null);
+    setUiState("ready");
+  }
+
+  async function verify() {
+    if (!file || uiState === "checking") return;
+    setUiState("checking");
+    setUploadError(null);
+    const formData = new FormData();
+    formData.set("image", file);
+    formData.set("instruction", instruction);
+    formData.set("verificationCriterion", verificationCriterion);
+    try {
+      const response = await fetch("/api/evidence/verify", { method: "POST", body: formData });
+      if (!response.ok) throw new Error("verification_failed");
+      const parsed = EvidenceVerificationResponseSchema.safeParse(await response.json());
+      if (!parsed.success) throw new Error("invalid_verification_response");
+      setResult(parsed.data.result);
+      setUiState(parsed.data.status);
+    } catch {
+      setResult(null);
+      setUiState("error");
+    }
+  }
 
   function finish() {
-    onComplete([photoTask.id, ...completed], {
-      verified: true, confidence: 1,
-      reason: "Development simulation only. No image content was inspected by an AI model.",
-    });
+    const evidenceStatus = uiState === "verified" ? "verified" : uiState === "error" ? "verification_unavailable" : "not_verified";
+    onComplete(
+      createCompletedTaskIds(photoTaskId, completed, evidenceStatus),
+      evidenceStatus,
+      result ?? undefined,
+    );
   }
+
+  const canContinue = uiState === "verified" || uiState === "uncertain" || uiState === "error";
 
   return <>
     <div className="eyebrow">03 / BRING BACK A LITTLE WONDER</div>
     <h1>You’re back.<br /><span className="serif">What did you find?</span></h1>
     <p className="lede">Show us one thing you discovered.</p>
-    <div className="demo-note">DEVELOPMENT DEMO · Verification is mocked.</div>
-    <p className="evidence-instruction">{photoTask.instruction}</p>
+    <p className="evidence-instruction">{instruction}</p>
     <label className={`upload-card ${preview ? "has-preview" : ""}`}>
       {preview ? <>
-        {/* Local object URL, never uploaded. Native image supports ephemeral previews. */}
+        {/* The object URL is an ephemeral browser preview and is revoked on replacement or unmount. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={preview} alt="Your selected quest discovery" />
         <span className="preview-label">Change photo</span>
-      </> : <><span className="upload-icon" aria-hidden="true">＋</span><strong>Add your discovery</strong><span>Choose one photo · stays on this device</span></>}
-      <input aria-label="Choose a discovery photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => {
-        const selected = event.target.files?.[0];
-        if (!selected) return;
-        if (!["image/jpeg", "image/png", "image/webp"].includes(selected.type) || selected.size > 10 * 1024 * 1024) {
-          setError("Choose a JPG, PNG, or WebP photo smaller than 10 MB.");
-          event.target.value = "";
-          return;
-        }
-        setError(null); setFile(selected); setPreview(URL.createObjectURL(selected)); setVerified(false);
-      }} />
+      </> : <><span className="upload-icon" aria-hidden="true">＋</span><strong>Add your discovery</strong><span>Choose one JPG, PNG, or WebP · up to 5 MB</span></>}
+      <input key={inputKey} aria-label="Choose a discovery photo" type="file" accept="image/jpeg,image/png,image/webp" disabled={uiState === "checking"} onChange={(event) => selectImage(event.target.files?.[0])} />
     </label>
-    {error && <p role="alert" className="warning">{error}</p>}
-    {!verified ? <>
-      <button className="button primary" disabled={!file} onClick={() => setVerified(true)}>Simulate photo verification <span aria-hidden="true">↗</span></button>
-      <button className="text-button" onClick={() => { setVerified(true); setError(null); }}>Continue with demo evidence</button>
-      <p className="footnote">No upload or image analysis. You can try the flow without a photo.</p>
-    </> : <>
-      <div className="verification-result" role="status"><strong>✓ Mock verification complete</strong><p>No image was analyzed. This result is a simulation.</p></div>
+    {preview && uiState !== "checking" && <button className="text-button" onClick={clearImage}>Remove photo</button>}
+    {uploadError && <p role="alert" className="warning">{uploadError}</p>}
+    {uiState === "ready" && <button className="button primary" disabled={!file} onClick={verify}>Verify discovery <span aria-hidden="true">↗</span></button>}
+    {uiState === "checking" && <button className="button primary" disabled>Checking your discovery… <span aria-hidden="true">↗</span></button>}
+    {uiState === "verified" && <div className="verification-result verified" role="status"><strong>✓ Discovery verified</strong><p>{result?.reason}</p></div>}
+    {uiState === "uncertain" && <div className="verification-result uncertain" role="status"><strong>Not sure yet</strong><p>This photo doesn’t clearly show enough evidence for the mission.</p><button className="text-button" onClick={clearImage}>Try another photo</button></div>}
+    {uiState === "error" && <div className="verification-result error" role="alert"><strong>We couldn’t check that right now.</strong><p>Your quest is safe. You can try again or continue.</p><button className="text-button" onClick={verify}>Try again</button></div>}
+    <p className="footnote">SideQuest does not persist this image. It is sent to Google for verification with store:false.</p>
+    {canContinue && <>
       <fieldset className="self-report"><legend>What else did you discover?</legend>
         <p className="muted">Check the tasks you completed. It’s okay to skip one.</p>
         {selfReportTasks.map((task) => <label className="check-task" key={task.id}>

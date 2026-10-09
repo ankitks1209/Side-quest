@@ -13,7 +13,7 @@ Mobile first, one dominant action per screen, large touch targets (at least 44px
 Landing: short promise and Start a SideQuest.
 Setup: exactly three duration choices, four moods and three environments.
 Quest: 2–3 readable mission cards; Begin switches to quiet active state with I'm back.
-Evidence: local photo preview, clearly mocked verification, self-report remaining tasks.
-Completion: mission complete, demo estimate and discoveries, restart action.
+Evidence: one local preview with replace/remove controls; explicit checking, verified, uncertain and provider-error states; self-report remaining tasks. Uncertain and error states allow completion without counting the photo discovery.
+Completion: mission complete, demo estimate and discoveries, honest photo verification receipt, restart action.
 
-Use text labels alongside decorative symbols. Demo labels remain visible on evidence and completion. No real XP economy; optional demo XP must never imply a retention system.
+Use text labels alongside decorative symbols. Completion timing keeps a visible demo label. Evidence verification is real and must not carry a mock label. No real XP economy; optional demo XP must never imply a retention system.

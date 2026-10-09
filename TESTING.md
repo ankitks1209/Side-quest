@@ -35,8 +35,15 @@ Run npm run dev; complete Landing → Setup → Mock Quest → Begin → I'm Bac
 - Two-attempt orchestration, retry success and validated fallback
 - Client/server `{ quest, source }` response boundary
 
+## Plan 3 automated tests
+- JPEG/PNG/WebP MIME and byte signatures, mismatches, fake images, 5 MB limit and bounded text fields
+- Stateless Google vision request, completed-only response handling and final ordered model output
+- Verification result schema, 0.75 classification boundary and client/server response schema
+- Exactly two technical attempts and no retry for a valid uncertain result
+- Verified evidence counts; uncertain/unavailable evidence remains completable without counting the photo
+
 ## Future tests
-Away Ratio visibility and zero-duration cases, vision failure/loading/retry. Outdoor field tests are future submission work.
+Away Ratio visibility and zero-duration cases. Outdoor field tests are future submission work.
 
 ## Plan 1 verification record — 2026-10-07
 Lint, typecheck, 17 Vitest tests and production build pass on Node 24.18.0. Browser acceptance passed at 375×844, 390×844, 430×844 and 1280×900: full flow, local image selection/preview, invalid file feedback, self-report checkboxes, restart, refresh/preferences, skipped tasks and unavailable localStorage. No browser runtime errors or horizontal overflow. Mobile screenshots visually inspected. Build and local server require permission outside this workspace sandbox to bind local ports; this is an execution-environment constraint.
@@ -49,3 +56,6 @@ Known tooling issue: npm audit reports five high-severity entries in the develop
 Lint, post-build strict typecheck, 75 Vitest tests and production build pass. A real Google Interactions request for 15 minutes / Explore / City returned `source: gemma` in under eight seconds with three tasks and exactly one verification-required task. A 390×844 browser run completed loading → generated quest → active quest → evidence demo → completion with no runtime errors or horizontal overflow.
 
 The two-failure path was exercised against the live provider when both requests exceeded the original reasoning latency budget; it returned a schema-, input- and safety-approved fallback. Minimal thinking was then enabled for constrained JSON generation, and the real provider path passed. Automated tests cover unsafe candidate → retry, `queued` → retry, all other non-completed statuses, two failures → fallback and invalid fallback → hard error. Visual review exposed and closed a `close your eyes` outdoor-safety gap. The configured API key is absent from built client and server artifacts.
+
+## Plan 3 verification record — 2026-10-10
+Lint, strict typecheck, 100+ Vitest tests and the production webpack build pass. A real Gemini 3.7 Flash request verified a synthetic green/yellow checkerboard at 0.99 confidence; an unrelated solid-gray image returned uncertain; a JPEG declared as PNG was rejected with HTTP 400. The 390×844 browser flow completed an uncertain photo without counting it, counted both self-reported tasks, showed the honest completion receipt, had no horizontal overflow and logged no browser errors. The configured API key is absent from built artifacts. Automated tests cover the simulated two-failure provider path and error completion behavior without live provider calls.

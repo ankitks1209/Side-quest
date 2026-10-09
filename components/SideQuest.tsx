@@ -8,6 +8,7 @@ import { CompletionSummary } from "./CompletionSummary";
 import { DEFAULT_INPUT } from "@/lib/quests/fixtures";
 import { QuestGenerationResponseSchema } from "@/lib/quests/generation-schema";
 import { createDemoSummary } from "@/lib/quests/demo-summary";
+import type { EvidenceCompletionStatus } from "@/lib/evidence/schema";
 import { loadPreferences, savePreferences } from "@/lib/storage/preferences";
 import type { Quest, QuestInput, QuestSummary } from "@/lib/quests/schema";
 
@@ -19,6 +20,7 @@ export function SideQuest() {
   const [quest, setQuest] = useState<Quest | null>(null);
   const [active, setActive] = useState(false);
   const [summary, setSummary] = useState<QuestSummary | null>(null);
+  const [evidenceStatus, setEvidenceStatus] = useState<EvidenceCompletionStatus | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
@@ -60,7 +62,7 @@ export function SideQuest() {
   return <div className="app-shell">
     <header className="header"><Link href="/" onClick={() => { setWarning(null); navigate("landing"); }} className="wordmark" aria-label="SideQuest home"><span className="brand-mark" aria-hidden="true">↗</span>SIDEQUEST<span className="brand-dot">.</span></Link><span className="header-note">GO FIND SOMETHING.</span></header>
     <main ref={mainRef} tabIndex={-1} className={`main-content ${screen === "landing" ? "landing" : ""}`} aria-label={screenLabels[screen]}>
-      <div className="page-meta"><span>{screenLabels[screen]}</span><span>{screen === "landing" ? "EST. 2026" : "PLAN 2 / BETA"}</span></div>
+      <div className="page-meta"><span>{screenLabels[screen]}</span><span>{screen === "landing" ? "EST. 2026" : "PLAN 3 / BETA"}</span></div>
       {screen === "landing" && <>
         <div className="trail-art" aria-hidden="true">
           <svg viewBox="0 0 340 220" fill="none"><path d="M-20 176C54 96 27 197 117 136S173 72 235 99 273 10 365 30" stroke="currentColor" strokeWidth="2" strokeDasharray="5 7" /><path d="M28 159 59 109l31 50H28Z" stroke="currentColor" strokeWidth="1.5" /><path d="m51 122 8 10 8-10M237 51v40m-15-20h30" stroke="currentColor" strokeWidth="1.5" /><circle cx="286" cy="44" r="19" fill="var(--lime)" /><path d="m278 52 16-16m-14 0h14v14" stroke="var(--ink)" strokeWidth="2" /><circle cx="120" cy="135" r="5" fill="var(--ink)" /><path d="M-10 211C78 149 206 219 358 140M-10 226C78 164 206 234 358 155" stroke="currentColor" strokeOpacity=".16" /></svg>
@@ -90,8 +92,8 @@ export function SideQuest() {
         <button className="button primary" onClick={() => { setActive(true); window.scrollTo({ top: 0 }); mainRef.current?.focus(); }}>Begin SideQuest <span aria-hidden="true">↗</span></button>
         <button className="text-button" onClick={() => navigate("setup")}>Adjust my choices</button>
       </>)}
-      {screen === "evidence" && quest && <EvidenceUploader quest={quest} onComplete={(ids) => { setSummary(createDemoSummary(ids.length)); navigate("completion"); }} />}
-      {screen === "completion" && summary && <CompletionSummary summary={summary} onRestart={start} />}
+      {screen === "evidence" && quest && <EvidenceUploader quest={quest} onComplete={(ids, status) => { setEvidenceStatus(status); setSummary(createDemoSummary(ids.length)); navigate("completion"); }} />}
+      {screen === "completion" && summary && evidenceStatus && <CompletionSummary summary={summary} evidenceStatus={evidenceStatus} onRestart={start} />}
       {warning && <p className="warning" role="status">{warning}</p>}
     </main>
     <footer className="footer"><span>SIDEQUEST / TAKE THE SCENIC MOMENT</span><span aria-hidden="true">↗</span></footer>

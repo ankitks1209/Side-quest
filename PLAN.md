@@ -38,3 +38,11 @@ The `QuestModel` boundary is provider-independent so a local Gemma implementatio
 
 ## Current status
 Plan 2 is complete. A real 15-minute / Explore / City request returned an approved Gemma quest with exactly one photo task. Unsafe candidates and all non-completed statuses consume an attempt; two failures return an approved fallback. The mobile flow, secret audit, lint, typecheck, 75 tests and production build pass. Do not begin Plan 3 until this result is reviewed.
+
+## Plan 3 — evidence intelligence
+Plan 3 replaces mock evidence with one real, server-side Gemini 3.7 Flash check. The server validates one JPEG/PNG/WebP image (MIME, signature and 5 MB maximum), sends it transiently with `store: false`, validates structured output and applies a centralized 0.75 threshold. Valid uncertain results do not retry; technical failures retry once. Neither result traps the user, and only verified photo evidence counts as a completed discovery. Away Ratio and timing remain explicit demo values.
+
+Plan 3 excludes image persistence, multiple images, video, OCR, recognition systems, GPS evidence, auth, databases, deployment, audio and real timing.
+
+## Plan 3 status
+Complete. Real verified and uncertain provider paths, forged upload rejection, 390×844 completion behavior, secret audit, lint, typecheck, 100+ tests and production build pass. Away Ratio and timing remain explicit demo values.

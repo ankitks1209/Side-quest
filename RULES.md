@@ -13,6 +13,9 @@ model output → schema validation → primitive validation → deterministic sa
 
 The language model is NOT the final safety authority. Schema validation alone is not semantic safety validation. Reject unsafe/ambiguous output; retry once and then use a safe fixture fallback compatible with the input. Never display raw output. This deterministic boundary is implemented in `lib/quests/approval.ts` and `lib/quests/safety.ts`.
 
+## Evidence verification
+Exactly one photo is checked against the photo task's single criterion. SideQuest accepts JPEG, PNG or WebP up to 5 MB and validates both declared MIME and file signature. Gemini output is untrusted until JSON parsing and `VerificationResultSchema` validation. A result is verified only when the model returns `verified: true` with confidence at least 0.75. All other valid results are uncertain. Technical failures retry once. Uncertain or unavailable verification never blocks completion, and the photo task counts only when verified.
+
 ## Away Ratio contract
 estimatedAwayMs = max(0, totalDurationMs - clampedActiveScreenMs)
 awayRatio = estimatedAwayMs / totalDurationMs (0 when duration is 0)

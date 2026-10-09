@@ -40,7 +40,7 @@ export const QuestSchema = QuestInputSchema.extend({
 });
 
 export const VerificationResultSchema = z.object({
-  verified: z.boolean(), confidence: z.number().min(0).max(1), reason: nonblank,
+  verified: z.boolean(), confidence: z.number().min(0).max(1), reason: nonblank.max(300),
 });
 export const QuestSessionSchema = z.object({
   questId: nonblank,

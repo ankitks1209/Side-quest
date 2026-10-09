@@ -9,7 +9,7 @@ An open-AI outdoor quest engine that creates short real-world adventures and ver
 “The world is the interface.” Less screen interaction, more exploration and observation.
 
 ## Planned MVP
-Choose duration, mood and environment; receive 2–3 safe tasks, go outside, return with one photo, self-report the remaining tasks and see an estimated Away Ratio. Photo verification and timing remain mocked in Plan 2.
+Choose duration, mood and environment; receive 2–3 safe tasks, go outside, return with one photo, verify that photo against its mission criterion, self-report the remaining tasks and see an estimated Away Ratio. Timing remains a clearly labeled demo value.
 
 ## Away Ratio
 Estimated time away from SideQuest / total quest duration. Future timing uses app visibility/session timing, never device-wide screen-time tracking. Current completion numbers are explicitly demo values.
@@ -34,10 +34,10 @@ npm run typecheck
 npm run test
 npm run build
 ```
-For real generation, copy `.env.example` to `.env.local` and provide the three server-only Gemma values. Missing or unavailable provider configuration automatically uses a validated curated fallback. Setup preferences persist locally; photos and flow progress do not.
+For real generation and evidence verification, copy `.env.example` to `.env.local` and provide the server-only Google values. Missing or unavailable quest generation uses a validated curated fallback. Setup preferences persist locally; photos and flow progress do not.
 
 ## Current Phase
-Plan 2: the five-screen shell calls hosted `gemma-4-26b-a4b-it` through Google's stateless Interactions API. Every candidate is parsed, schema-checked, matched to the request and deterministically safety-checked. The `QuestModel` boundary remains provider-independent so local Gemma can be added later. Local/offline inference is not implemented. Evidence verification and Away Ratio values remain explicit demos.
+Plan 3: hosted `gemma-4-26b-a4b-it` generates approved quests and Gemini 3.7 Flash performs one bounded multimodal evidence check. SideQuest does not persist the uploaded evidence image; it is sent to Google with `store:false`. Uncertain or unavailable verification never blocks completion. Away Ratio and timing remain explicit demos.
 
 ## Hackathon Principle
 Optimize for a small, reliable, visually polished vertical slice. Add only what materially increases the chance of winning the current challenge.
