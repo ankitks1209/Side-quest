@@ -19,7 +19,7 @@ Runtime authority: lib/quests/schema.ts; TypeScript types are inferred from Zod.
 | QuestGenerationResponse | quest, source: gemma \| fallback |
 | ActiveSessionRecord | version: 1, quest, questSession, phase: active \| evidence, visibleSegmentStartedAt: epoch ms \| null |
 
-Quest/task IDs are nonblank; task IDs must be unique within a quest. Exactly one task requires photo verification. Schema checks structure, not full safety or semantic compatibility. All mock inputs are parsed; fixture selection preserves duration/mood/environment and approved primitives.
+Quest/task IDs are nonblank; task IDs must be unique within a quest. Exactly one task requires photo verification. Schema checks structure, not full safety or semantic compatibility. Inputs are parsed; curated fallback selection preserves duration/mood/environment and approved primitives.
 
 V1 persistence is localStorage only. Validated setup preferences and one versioned active-session record may persist. Active and Evidence phases restore after refresh; Completion history does not. Storage failure leaves the in-memory flow usable and gives at most one friendly recovery warning.
 

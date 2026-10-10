@@ -51,7 +51,7 @@ Run npm run dev; complete Landing → Setup → generated Quest → Begin → I'
 - Minute and hour-plus duration formatting
 
 ## Future tests
-Production deployment smoke tests and outdoor field tests remain future work.
+Current deployed-provider smoke tests have run: generation passed; photo verification returned HTTP 503 on valid synthetic inputs, including a sequential retry. No real outdoor field-test results have been supplied; the finalized article does not claim an outing. Plan 4B deployment is complete per owner handoff.
 
 ## Plan 1 verification record — 2026-10-07
 Lint, typecheck, 17 Vitest tests and production build pass on Node 24.18.0. Browser acceptance passed at 375×844, 390×844, 430×844 and 1280×900: full flow, local image selection/preview, invalid file feedback, self-report checkboxes, restart, refresh/preferences, skipped tasks and unavailable localStorage. No browser runtime errors or horizontal overflow. Mobile screenshots visually inspected. Build and local server require permission outside this workspace sandbox to bind local ports; this is an execution-environment constraint.
@@ -70,3 +70,29 @@ Lint, strict typecheck, 100+ Vitest tests and the production webpack build pass.
 
 ## Plan 4A verification record — 2026-10-10
 Lint, strict typecheck, 119 Vitest tests and production build pass. Browser acceptance at 390×844 restored both Active and Evidence phases after refresh, restored an uncertain verification result and a self-reported task without restoring its image, completed with measured values, showed 2 of 3 discoveries, cleared recovery state after completion and returned to Landing on completion refresh. There was no horizontal overflow and no browser warning/error output. Pure tests cover hidden-time math because browser automation cannot reliably background the in-app tab.
+
+
+## Plan 5A verification record — 2026-10-10
+Documentation-only submission preparation plus a safe environment-example cleanup; no product code, dependencies or lockfile changed. Lint, production webpack build, sequential post-build strict typecheck and 119/119 tests pass. Relative links in all top-level markdown resolve and `git diff --check` passes.
+
+Tracked-file scans found no recognizable Google/GitHub tokens, private-key blocks or private home paths. Seven reachable commits were scanned for recognizable tokens/private-key blocks with no matches. `.env.local` remains ignored and untracked. The configured local key was compared against every file under `.next` without printing its value; no matching build file was found. These scans do not cover screenshots shared outside Git or prove key revocation.
+
+Registry-backed npm audit still reports five high-severity development lint-chain entries and zero critical entries; no compatible fix was installed or forced downgrade attempted. See SECURITY_AUDIT.md. Attempts to fetch the public app/repo through the web tool returned internal errors; public access is not independently confirmed in this run. Owner-reported Plan 4B completion is recorded separately from verification. Exposed-key revocation/replacement, new-key deployed provider smoke tests, real outdoor field tests and media remain pending.
+
+Frozen-prompt reconciliation: lint, standalone strict typecheck, 119/119 tests and production build were rerun successfully after the exact title/section/media-plan updates. The final build includes Next.js's TypeScript check. DEV YAML frontmatter parses correctly, relative markdown links resolve and final public-file/build scans find no recognizable credentials or exact configured key. App metadata is accurate, the public directory is empty, and no media is tracked. No product code or lockfile changed.
+
+## Plan 5B/5C verification record — 2026-10-11
+
+Submission documentation only: article finalized without outdoor claims/placeholders; five screenshot specifications, 75–85 second walkthrough and cover brief prepared. Lint, 119/119 tests, production build and sequential strict typecheck pass. DEV YAML, relative Markdown file links, article quality assertions and whitespace checks pass. Public app/repo/challenge/launch links return HTTP 200 without authentication; app landing HTML observed after initial Render wake-up.
+
+Credential-pattern scans of current public files and seven reachable commits (116 unique blobs) pass. Exact configured-key comparisons against public files and rebuilt `.next` pass without printing values. `.env.local` remains ignored/untracked; no public assets or tracked media exist. Product/configuration/dependency hashes match task entry. No outdoor test, media upload, key rotation, current live-provider smoke test, commit/push or DEV publication is claimed. See SUBMISSION_QA.md for scope and remaining release checks. Earlier key-rotation prerequisites below/above are historical recommendations; current private-screenshot context is recorded in SECURITY_AUDIT.md.
+
+## Full submission recheck — 2026-10-11
+
+Lint, 119/119 tests (14 files), production build, post-build strict typecheck and DEV YAML pass again. Live generation returned HTTP 200 / `source: gemma` with three tasks and exactly one photo task. Synthetic checkerboard and unrelated gray-image verification returned HTTP 503; one later sequential checkerboard retry also returned 503. A JPEG signature declared as PNG was rejected with HTTP 400. No current successful verification or outdoor test is claimed. The endpoint does not expose root cause; Render/provider diagnostics remain needed.
+
+Public app/repository/challenge/launch links return HTTP 200. GitHub API confirms public repository creation within the challenge window and no license. Remote main remains 329068f; docs are uncommitted/unpushed. Fresh registry audit reports five high / zero critical development-chain advisories, confirmed against dev-only lockfile entries; no dependency changes. Current public-file, seven-commit history and rebuilt-output credential scans pass. See SUBMISSION_RECHECK.md for details.
+
+## Provider investigation and documentation synchronization — 2026-10-11
+
+A direct Google request using the locally configured verifier returned HTTP 200, completed interaction, model output and valid verification JSON in 12.53 seconds, within the 20-second adapter budget. This is a local provider diagnostic with a synthetic fixture; it does not prove deployed environment parity or successful Render verification. Browser access to signed-in Chrome was not approved; deployment logs/settings and DEV draft were not inspected or changed. The owner authorized a documentation-only commit/push. Previous uncommitted/remote-main statements are pre-push snapshots. No product code, configuration secrets, dependencies or lockfile changed.

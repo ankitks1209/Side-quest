@@ -6,7 +6,7 @@ Approved primitives: PHOTO_OBJECT, FIND_NATURE, OBSERVE_PATTERN, OBSERVE_COLOR, 
 
 Never allow: trespassing; private property; construction zones; rail tracks; unsafe traffic interaction; dangerous road crossing; climbing; entering water; abandoned buildings; approaching or handling wildlife; touching unknown plants/fungi; eating unknown plants/berries/fungi; following strangers; closing eyes outdoors; dangerous night exploration; extreme physical activity; illegal activity; dangerous tools/weapons/fire.
 
-Use accessible public places and observation from safe paths. Users may skip a task when conditions are unsafe. Walking is comfortable and optional, with rest time inside the duration budget. Plan 1 uses curated fixtures, not generated instructions; this does not constitute an implemented general-purpose safety validator.
+Use accessible public places and observation from safe paths. Users may skip a task when conditions are unsafe. Walking is comfortable and optional, with rest time inside the duration budget. Historically, Plan 1 used curated fixtures only. The current model approval boundary below includes a deterministic rule-based safety filter; it is not an exhaustive semantic safety system.
 
 ## Quest approval pipeline
 model output → schema validation → primitive validation → deterministic safety validation → approved quest

@@ -1,78 +1,78 @@
 # Architecture decisions
 
 ## ADR-001: Next.js single application
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Use one Next.js App Router application.
 - Reason: One local and deployable vertical slice minimizes operational work.
 - Revisit condition: A proven requirement cannot be handled within the existing app.
 
 ## ADR-002: No authentication
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: No accounts, auth or OAuth.
 - Reason: The quest flow needs no identity.
 - Revisit condition: Explicit product requirement for identity.
 
 ## ADR-003: localStorage instead of database
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Use localStorage only for V1 persistence.
-- Reason: Local preferences need no cloud infrastructure.
+- Reason: Setup preferences and one recoverable active session need no cloud infrastructure.
 - Revisit condition: Explicitly authorized cross-device persistence requirement.
 
 ## ADR-004: Structured quest primitives
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Use only the eight approved primitives.
 - Reason: Constrained output can be validated and tested.
 - Revisit condition: Explicit approval of a new primitive with safety and tests.
 
 ## ADR-005: Deterministic safety validation
-- Status: Accepted (future integrations remain planned, not implemented).
-- Decision: Schema, primitive and deterministic safety validation precede future model approval.
+- Status: Accepted.
+- Decision: Schema, primitive and deterministic safety validation precede model approval; implemented in Plan 2.
 - Reason: Models are not a safety authority.
 - Revisit condition: Never remove the deterministic gate; improve coverage based on evidence.
 
 ## ADR-006: Mobile-first design
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Design for approximately 390×844 and support 375/430px and desktop.
 - Reason: Outdoor use favors short, readable mobile interactions.
 - Revisit condition: Observed accessibility or layout issue.
 
 ## ADR-007: AI integration only after UI/product skeleton
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Plan 1 uses fixtures; no model calls.
 - Reason: Prove product flow independently of inference.
 - Revisit condition: Plan 1 checks pass and Plan 2 is authorized.
 
 ## ADR-008: No global state library
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Use React state.
 - Reason: Five screens need only a small local flow.
 - Revisit condition: A demonstrated state problem cannot be resolved simply.
 
-## ADR-009: Render is planned deployment target
-- Status: Accepted (future integrations remain planned, not implemented).
-- Decision: Plan to deploy the single app on Render later.
+## ADR-009: Render deployment target
+- Status: Accepted.
+- Decision: Deploy the single app as one Render Node Web Service; Plan 4B is complete per owner handoff.
 - Reason: Matches partner target with minimal deployment architecture.
 - Revisit condition: Deployment phase reveals a concrete blocker.
 
-## ADR-010: ElevenLabs is optional
-- Status: Accepted (future integrations remain planned, not implemented).
-- Decision: Only consider reading quests aloud after stable MVP.
-- Reason: Voice is valuable only when it reduces screen interaction.
+## ADR-010: Audio is outside submission scope
+- Status: Accepted.
+- Decision: No ElevenLabs or other audio integration for this submission.
+- Reason: Freeze the working outdoor vertical slice; media narration does not need a product integration.
 - Revisit condition: Authorized evidence that audio improves the core outdoor experience.
 
 ## ADR-011: No maps or GPS routing
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: No GPS, maps, routing or nearby-place search.
 - Reason: Location-independent quests keep scope and permissions small.
 - Revisit condition: Explicit product contract change.
 
 ## ADR-012: One AI-verifiable task per quest is enough
-- Status: Accepted (future integrations remain planned, not implemented).
+- Status: Accepted.
 - Decision: Exactly one photo-verifiable task; others self-reported.
 - Reason: One photo proves the verification loop with minimal screen use.
 - Revisit condition: Explicit requirement supported by field-test evidence.
 
-## Foundation implementation notes
+## Foundation implementation notes (historical Plan 1)
 - Dependencies are pinned to exact installed versions and package-lock.json is committed-ready; use npm ci. Node 24.x is documented in .nvmrc and package engines for the selected Vitest version.
 - next.config.ts disables Next.js managed agentRules so next dev cannot append framework instructions to the hand-maintained AGENTS.md contract. Consult installed version-matched Next.js documentation when changing framework behavior.
 - Plan 1 does not persist photos or sessions. Only validated setup preferences are saved. Evidence and metrics remain simulations.
@@ -148,3 +148,22 @@
 - Decision: Discard an unfinished persisted visible segment on restore and begin a fresh segment only if the new document is visible.
 - Reason: Unknown time after a crash must not be falsely counted as visible app use.
 - Revisit condition: Browser lifecycle guarantees materially improve.
+
+
+## ADR-025: Submission-only Plan 5
+- Status: Accepted (2026-10-10 owner handoff).
+- Decision: Keep supporting contracts in the repo, with README as the public entry point. Plan 5 covers audit, writing, field evidence/media and final QA; no new product features.
+- Reason: Writing quality and real outdoor evidence are the remaining challenge priorities.
+- Revisit condition: Explicit human authorization after this submission.
+
+## ADR-026: Precise public claims
+- Status: Accepted.
+- Decision: Describe Gemma as the hosted open-weight quest core and Gemini as a bounded multimodal verifier. Describe Away Ratio as app visibility and `store: false` as disabled Interaction storage. Never invent outdoor results or imply offline inference.
+- Reason: Judges need inspectable evidence and accurate boundaries.
+- Revisit condition: Implemented behavior changes under explicit authorization.
+
+## ADR-027: Evidence-bounded submission without an outing
+- Status: Accepted (2026-10-11 owner request).
+- Decision: Finalize Plan 5B/5C writing and media specifications from implemented behavior and recorded technical tests. Omit accomplished outdoor claims; use an explicitly labeled app walkthrough. Media production and publication are separate unfinished release actions.
+- Reason: No authentic outdoor results were supplied; an outing is bonus evidence in the challenge, not a reason to fabricate results or block article editing.
+- Revisit condition: Real field evidence or media is supplied and can be accurately attributed.
